@@ -142,41 +142,53 @@ def Curvefit(HLA,N):
     #print(len(curvefit))
     return curvefit
 
-def Nantload():
-    def loadNAntdata(file):
+def Nantload(option="false"):
+    def loadNAntdata(file, criterium):
         data=open(file, 'r')
         PatNAntlist=list()
         for line in data:
             cont=False
             newline=line.split()
-            print(newline)
+            #print(newline)
             newPatHLA=PatHLA(newline)
-            if "HLA-A" in newline[1]:
-                newPatHLA.NALA+=1
-            if "HLA-B" in newline[1]:
-                newPatHLA.NALB+=1
-            if "HLA-C" in newline[1]:
-                newPatHLA.NALC+=1
-            for pat in PatNAntlist:
-                if pat.ID==newPatHLA.ID:
-                    print(pat.ID, newPatHLA.ID)
-                    pat.NALA+=newPatHLA.NALA
-                    pat.NALB+=newPatHLA.NALB
-                    pat.NALC+=newPatHLA.NALC
-                    cont=True
-                    print("bier")
-                    
-            print(len(PatNAntlist))    
-            if cont==False:
-                PatNAntlist.append(newPatHLA)
-        newfile=open("Neoantigenloads.txt", 'w')
+            #print(newline[2], criterium)
+            #break
+            if newline[2]==criterium:
+                if "HLA-A" in newline[1]:
+                    newPatHLA.NALA+=1
+                if "HLA-B" in newline[1]:
+                    newPatHLA.NALB+=1
+                if "HLA-C" in newline[1]:
+                    newPatHLA.NALC+=1
+                for pat in PatNAntlist:
+                    if pat.ID==newPatHLA.ID:
+                        print(pat.ID, newPatHLA.ID)
+                        pat.NALA+=newPatHLA.NALA
+                        pat.NALB+=newPatHLA.NALB
+                        pat.NALC+=newPatHLA.NALC
+                        cont=True
+                        
+                        
+                print(len(PatNAntlist))    
+                if cont==False:
+                    PatNAntlist.append(newPatHLA)
+        newfile=open(Option+"loads"+criterium+".txt", 'w')
         newfile.write("Patient\tHLA-A\tHLA-B\tHLA-C")
         
         for pat in PatNAntlist:
             newfile.write("\n"+str(pat.ID)+"\t"+str(pat.NALA)+"\t"+str(pat.NALB)+"\t"+str(pat.NALC))
         newfile.close()
         return
-    loadNAntdata("testneo.txt")
+    if option=="Neo":
+        loadNAntdata("testneo.txt", "response")
+        loadNAntdata("testneo.txt", "nonresponse")
+        loadNAntdata("testneo.txt", "long-survival")
+    if option=="Mut":
+        loadNAntdata("testneo2.txt", "response")
+        loadNAntdata("testneo2.txt", "nonresponse")
+        loadNAntdata("testneo2.txt", "long-survival")
+    else:
+        print("Option unknown, please use the option Neo or Mut")
 
 def Equal6mer():
     def loadNAdata(file, mincount=6):
